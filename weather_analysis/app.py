@@ -51,10 +51,14 @@ def welcome():
 
 # define precipitation function
 def precipitation():
+    #set prev_year variable for one year of data
     prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    #query precipitation data for the previous year
     precipitation = session.query(Measurement.date, Measurement.prcp).\
         filter(Measurement.date >= prev_year).all()
+    #create dictionary of date: precipitation 
     precip = {date: prcp for date, prcp in precipitation}
+    # jsonify
     return jsonify(precip)
 
 
@@ -63,8 +67,11 @@ def precipitation():
 
 # define stations function
 def stations():
+    #query all stations
     results = session.query(Station.station).all()
+    #unravel results into 1D array
     stations = list(np.ravel(results))
+    #jsonify
     return jsonify(stations=stations)
 
 # set up tobs route
@@ -96,6 +103,7 @@ def stats(start=None, end=None):
     if not end:
         results = session.query(*sel).\
             filter(Measurement.date >= start).all()
+        #unravel list and jsonify
         temps = list(np.ravel(results))
         return jsonify(temps)
 
@@ -103,5 +111,6 @@ def stats(start=None, end=None):
     results = session.query(*sel).\
         filter(Measurement.date >= start).\
         filter(Measurement.date <= end).all()
+    #unravel list and jsonify
     temps = list(np.ravel(results))
     return jsonify(temps)
